@@ -16,7 +16,6 @@ USE ong_animais;
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 
-
 -- --------------------------------------------------------
 -- //TABELA USUÁRIOS.
 -- --------------------------------------------------------
@@ -58,6 +57,7 @@ CREATE TABLE Contatos (
     FOREIGN KEY (usuario_id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );
 -- --------------------------------------------------------
+
 -- //TABELA ANIMAIS.
 -- --------------------------------------------------------
 CREATE TABLE Animais (
@@ -1759,7 +1759,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS temp_voluntarios (
                 WHEN v_disponibilidade LIKE '%de semana%' THEN 'Alta'
                 WHEN v_disponibilidade LIKE '%Sábado%' THEN 'Alta'
                 WHEN v_disponibilidade LIKE '%Domingo%' THEN 'Alta'
-                WHEN v_disponibilidade LIKE '%noite%' THEN 'Média'
+                WHEN v_disponibilidade LIKE '%tarde%' THEN 'Média'
                 ELSE 'Normal'
             END
         );
