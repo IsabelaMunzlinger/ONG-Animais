@@ -7,12 +7,15 @@
 DROP SCHEMA IF EXISTS ong_animais;
 CREATE SCHEMA IF NOT EXISTS ong_animais;
 USE ong_animais;
+-- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 -- //TABELAS.
 -- --------------------------------------------------------
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- //TABELA USUÁRIOS.
@@ -74,7 +77,6 @@ CREATE TABLE Animais (
     cor VARCHAR(255) NOT NULL DEFAULT '-',
     historia VARCHAR(512)
 );
-
 -- --------------------------------------------------------
 -- //TABELA PRONTUÁRIOS.
 -- --------------------------------------------------------
@@ -254,11 +256,13 @@ CREATE TABLE Animal_Vacina(
 );
 -- --------------------------------------------------------
 
+
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 -- //INSERTS.
 -- --------------------------------------------------------
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- //INSERTS TABELA USUÁRIOS.
@@ -703,9 +707,9 @@ GROUP BY
 	cor
 ORDER BY 
 	quantidade DESC;
-    
-    -- Usando OVER(PARTITION BY)
-    
+-- --------------------------------------------------------
+-- Usando OVER(PARTITION BY).
+-- --------------------------------------------------------
 SELECT 
     distinct
 	cor, COUNT(*) over(partition by cor) AS quantidade
@@ -713,7 +717,6 @@ FROM
 	Animais
 ORDER BY 
 	quantidade DESC;
-    
 -- --------------------------------------------------------
 -- //SELECT 4: UTILIZADO PARA CONSULTAR HISTÓRICO DE ADOÇÕES.
 -- --------------------------------------------------------
@@ -729,8 +732,6 @@ JOIN
     Animais ON Adocoes.animal_id = Animais.id
 ORDER BY 
     Adocoes.data_adocao ASC;
-    
-
 -- --------------------------------------------------------
 -- //SELECT 5: UTILIZADO PARA CONSULTAR INFORMAÇÕES REFERENTES A UMA CAMPANHA.
 -- --------------------------------------------------------
@@ -782,7 +783,13 @@ ORDER BY
 -- --------------------------------------------------------
 
 
-\
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+-- //PROCEDURES.
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
 -- --------------------------------------------------------
 -- //PROCEDURE 1: INSERIR PARÂMETRO DEFAULT NA TABELA ANIMAIS.
 -- --------------------------------------------------------
@@ -901,7 +908,6 @@ BEGIN
 END $$
 DELIMITER ;
 CALL atualizarDataNascimentoAnimal(2, NOW());
-
 -- --------------------------------------------------------
 -- //PROCEDURE 8: ATUALIZAR HISTORIA DE UM ANIMAL.
 -- --------------------------------------------------------
@@ -912,7 +918,6 @@ BEGIN
 END $$
 DELIMITER ;
 CALL atualizarHistoriaAnimal(2, 'Teste call');
-
 -- --------------------------------------------------------
 -- //PROCEDURE 9: INSERIR USUARIO.
 -- --------------------------------------------------------
@@ -931,7 +936,6 @@ BEGIN
 		(vNome, vCPF, vData_nascimento, vGenero, vTipo, NOW(), vSenha);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 10: ATRIBUIR ENDEREÇO USUARIO.
 -- --------------------------------------------------------
@@ -953,7 +957,6 @@ BEGIN
     VALUES (vId, vCEP, vRua, vCidade, vBairro, vEstado, vNumero, vPais, vTipo);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 11: ATUALIZAR ENDERECO DE UM USUARIO.
 -- --------------------------------------------------------
@@ -984,7 +987,6 @@ BEGIN
     WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 12: ATRIBUIR CONTATO USUARIO.
 -- --------------------------------------------------------
@@ -1000,7 +1002,6 @@ BEGIN
 	VALUES (vId, vEmail, vCelular);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 13: ATUALIZAR CONTATO DE UM USUARIO.
 -- --------------------------------------------------------
@@ -1021,7 +1022,6 @@ BEGIN
 	END IF;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 14: INSERIR VACINA.
 -- --------------------------------------------------------
@@ -1035,7 +1035,6 @@ BEGIN
     INSERT INTO Vacinas(nome, codigo) VALUES (vNome, vCodigo);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 15: INSERIR PRONTUARIO.
 -- --------------------------------------------------------
@@ -1059,7 +1058,6 @@ BEGIN
     VALUES (@idProntuarioNovo, vDoencas);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 16: INSERIR DOENCAS.
 -- --------------------------------------------------------
@@ -1074,7 +1072,6 @@ BEGIN
     VALUES (vCid, vNome);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 17: INSERIR CAMPANHAS.
 -- --------------------------------------------------------
@@ -1124,7 +1121,6 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 18: INSERIR ADOCOES.
 -- --------------------------------------------------------
@@ -1155,7 +1151,6 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 19: REPROVAR ADOCAO.
 -- --------------------------------------------------------
@@ -1173,7 +1168,6 @@ BEGIN
 	WHERE usuario_id = vIdUsuario AND animal_id = vIdAnimal;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 20: APROVAR ADOCAO.
 -- --------------------------------------------------------
@@ -1189,7 +1183,6 @@ BEGIN
 	WHERE usuario_id = vIdUsuario AND animal_id = vIdAnimal;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 21: CONCLUIR ADOCAO.
 -- --------------------------------------------------------
@@ -1205,8 +1198,6 @@ BEGIN
 	WHERE usuario_id = vIdUsuario AND animal_id = vIdAnimal;
 END $$
 DELIMITER ;
-
-
 -- --------------------------------------------------------
 -- //PROCEDURE 22: INSERIR AGENDAMENTO.
 -- --------------------------------------------------------
@@ -1238,7 +1229,6 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //PROCEDURE 23: INSERIR FUNCIONARIOS.
 -- --------------------------------------------------------
@@ -1270,9 +1260,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 23: INSERIR FORNECEDORES.
+-- //PROCEDURE 24: INSERIR FORNECEDORES.
 -- --------------------------------------------------------  
 DELIMITER $$
 CREATE PROCEDURE insertFornecedor
@@ -1299,9 +1288,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 24: ADICIONAR ESTOQUE.
+-- //PROCEDURE 25: ADICIONAR ESTOQUE.
 -- --------------------------------------------------------  
 DELIMITER $$
 CREATE PROCEDURE adicionarEstoque
@@ -1331,9 +1319,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 25: INSERIR SOLICITACOES.
+-- //PROCEDURE 26: INSERIR SOLICITACOES.
 -- --------------------------------------------------------  
 DELIMITER $$
 CREATE PROCEDURE inserirSolicitacao
@@ -1364,9 +1351,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 26: APROVAR SOLICITACOES.
+-- //PROCEDURE 27: APROVAR SOLICITACOES.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE aprovarSolicitacao
@@ -1379,9 +1365,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 27: REPROVAR SOLICITACOES.
+-- //PROCEDURE 28: REPROVAR SOLICITACOES.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE reprovarSolicitacao
@@ -1394,9 +1379,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 28: INSERT TRATAMENTOS.
+-- //PROCEDURE 29: INSERT TRATAMENTOS.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE inserirTratamento
@@ -1432,9 +1416,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 29: ATRIBUIR VACINAS.
+-- //PROCEDURE 30: ATRIBUIR VACINAS.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE atribuirVacina
@@ -1455,9 +1438,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 30: PROMOVER USUÁRIO PARA FUNCIONÁRIO.
+-- //PROCEDURE 31: PROMOVER USUÁRIO PARA FUNCIONÁRIO.
 -- --------------------------------------------------------
 DELIMITER $
 CREATE PROCEDURE sp_PromoverParaFuncionario(
@@ -1480,9 +1462,8 @@ DELIMITER ;
 -- //TESTE.
 -- --------------------------------------------------------
 call sp_PromoverParaFuncionario(2, 1000.00, "Auxiliar noturno");
-
 -- --------------------------------------------------------
--- //PROCEDURE 31: INSERIR VOLUNTÁRIOS.
+-- //PROCEDURE 32: INSERIR VOLUNTÁRIOS.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE inserirVoluntario
@@ -1506,9 +1487,8 @@ BEGIN
 	);
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 32: APAGAR USUARIO.
+-- //PROCEDURE 33: APAGAR USUARIO.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarUsuario
@@ -1520,9 +1500,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 33: APAGAR VOLUNTARIO.
+-- //PROCEDURE 34: APAGAR VOLUNTARIO.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarVoluntario
@@ -1534,9 +1513,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 34: APAGAR FORNECEDOR.
+-- //PROCEDURE 35: APAGAR FORNECEDOR.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarFornecedor
@@ -1548,9 +1526,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 35: APAGAR ANIMAL.
+-- //PROCEDURE 36: APAGAR ANIMAL.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarAnimal
@@ -1562,9 +1539,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 36: APAGAR CAMPANHA.
+-- //PROCEDURE 37: APAGAR CAMPANHA.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarCampanha
@@ -1576,9 +1552,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 37: APAGAR ESTOQUE.
+-- //PROCEDURE 38: APAGAR ESTOQUE.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarEstoque
@@ -1590,9 +1565,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 38: APAGAR AGENDAMENTO.
+-- //PROCEDURE 39: APAGAR AGENDAMENTO.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarAgendamento
@@ -1604,9 +1578,8 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
-
 -- --------------------------------------------------------
--- //PROCEDURE 39: APAGAR SOLICITACAO.
+-- //PROCEDURE 40: APAGAR SOLICITACAO.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE deletarSolicitacao
@@ -1618,6 +1591,7 @@ BEGIN
 	WHERE id = vId;
 END $$
 DELIMITER ;
+-- --------------------------------------------------------
 
 
 -- --------------------------------------------------------
@@ -1626,10 +1600,10 @@ DELIMITER ;
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 
+
 -- --------------------------------------------------------
 -- //FUNCTION 1: CALCULAR OS CUSTOS QUE UMA EMPRESA TEVE COM OS FUNCIONÁRIOS A PARTIR DE DETERMINADO MÊS E ANO.
 -- --------------------------------------------------------
-
 -- Calcular os custos que uma empresa teve com os funcionários a partir de determinado mês
 -- Possibilita escolher o percentual de encargo (curso além do salário), a partir de um ano e mês
 DELIMITER $
@@ -1665,15 +1639,12 @@ BEGIN
     RETURN v_custo_total;
 END$$
 DELIMITER ;
-
 -- Exemplo: Calcular o custo da folha de pagamento para
 -- Junho de 2024, com 35% de encargos.
 SELECT f_CustoMensalFolhaPagamento(2024, 6, 35.0);
-
 -- --------------------------------------------------------
 -- //FUNCTION 2: RETORNAR LUCRO DE CAMPANHA LEVANTADA.
 -- --------------------------------------------------------
-
 CREATE FUNCTION f_LucroTotalCampanha(
 	p_Custo DECIMAL(15,2), 
     p_Ganho DECIMAL(15,2)
@@ -1682,9 +1653,8 @@ RETURNS DECIMAL(15,2)
 DETERMINISTIC
 RETURN p_Ganho - p_Custo;
 SELECT f_LucroTotalCampanha(1000.0, 1500.0);
-
-
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
@@ -1712,7 +1682,6 @@ BEGIN
     END IF;
 END$$
 DELIMITER ;
-
 -- --------------------------------------------------------
 -- //TRIGGER 2: QUE DETERMINA SE A DATA DE UMA CAMPANHA É VALIDA.
 -- --------------------------------------------------------
@@ -1736,10 +1705,13 @@ DELIMITER ;
 -- (NULL, 'teste', 'teste', '2025-07-01 09:00:00', '2025-06-15 18:00:00', 'teste', 'aguardando', 'Arrecadação', 'Lua');
 -- --------------------------------------------------------
 
+
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 -- //CURSOR.
 -- --------------------------------------------------------
+-- --------------------------------------------------------
+
 -- --------------------------------------------------------
 -- DROP PROCEDURE listar_voluntarios_cursor;
 
@@ -1803,8 +1775,8 @@ END $
 DELIMITER ;
 
 CALL listar_voluntarios_cursor();
-
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
@@ -1812,6 +1784,8 @@ CALL listar_voluntarios_cursor();
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 
+
+-- --------------------------------------------------------
 -- //VIEW 1: PARA FICHA COMPLETA DO ANIMAL.
 -- --------------------------------------------------------
 CREATE OR REPLACE VIEW vw_Ficha_Completa_Animal_Disponivel AS
@@ -1844,7 +1818,6 @@ WHERE
     a.situacao = 'D';
 
 SELECT * FROM vw_Ficha_Completa_Animal_Disponivel;
-
 -- --------------------------------------------------------
 -- //VIEW 2: PARA PAINEL DE ADOÇÕES.
 -- --------------------------------------------------------
@@ -1872,7 +1845,6 @@ LEFT JOIN
     Contatos AS c ON u.id = c.usuario_id;
     
 SELECT * FROM vw_Painel_Adocoes;
-
 -- --------------------------------------------------------
 
 
@@ -1881,6 +1853,7 @@ SELECT * FROM vw_Painel_Adocoes;
 -- //INDEXES.
 -- --------------------------------------------------------
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- //INDEX 1: AUXILIAR NA ORDENAÇÃO DE CAMPANHAS MAIS RECENTES.
@@ -1899,39 +1872,43 @@ CREATE INDEX listarAnimaisMenu
 ON Animais(nome, especie, situacao);
 -- --------------------------------------------------------
 
+
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 -- //LOCK TABLE.
 -- --------------------------------------------------------
 -- --------------------------------------------------------
--- Defina os IDs para o teste
-SET @animal_id_para_adotar = 1; -- Mude para um ID de animal que exista e esteja disponível
-SET @usuario_id_adotante = 5; -- Mude para um ID de usuário que exista
 
--- INÍCIO DA OPERAÇÃO CRÍTICA: Bloqueia as tabelas
+-- --------------------------------------------------------
+-- Define os IDs para o teste.
+SET @animal_id_para_adotar = 1; -- Mudar para um ID de animal que exista e esteja disponível.
+SET @usuario_id_adotante = 5; -- Mudar para um ID de usuário que exista.
+
+-- INÍCIO DA OPERAÇÃO CRÍTICA: Bloqueia as tabelas.
 LOCK TABLES Animais WRITE, Adocoes WRITE;
 
--- Dentro do LOCK, verificamos a situação do animal
+-- Dentro do LOCK, verificamos a situação do animal.
 SELECT situacao INTO @situacao_atual FROM Animais WHERE id = @animal_id_para_adotar;
 
--- Verifique o valor da variável para decidir o próximo passo
+-- Verifica-se o valor da variável para decidir o próximo passo.
 SELECT @situacao_atual;
 
--- Atualiza a situação do animal para 'Adotado'
+-- Atualiza a situação do animal para 'Adotado'.
 UPDATE Animais SET situacao = 'A' WHERE id = @animal_id_para_adotar;
 
--- Cria o registro de adoção
+-- Cria o registro de adoção.
 INSERT INTO Adocoes (usuario_id, animal_id, data_adocao, situacao)
 VALUES (@usuario_id_adotante, @animal_id_para_adotar, NOW(), 'concluido');
 
 SELECT 'SUCESSO: Adoção realizada e registrada.' as resultado_da_operacao;
 
--- Não fazemos nada, apenas informamos o motivo
+-- Informa-se o motivo.
 SELECT 'FALHA: O animal não está disponível para adoção.' as resultado_da_operacao;
 
--- FIM DA OPERAÇÃO CRÍTICA: Libera as tabelas
+-- FIM DA OPERAÇÃO CRÍTICA: Libera as tabelas.
 UNLOCK TABLES;
 -- --------------------------------------------------------
+
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
