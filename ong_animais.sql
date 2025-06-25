@@ -612,6 +612,178 @@ INSERT INTO Animal_Vacina(animal_id, vacina_id) VALUES
 
 
 -- --------------------------------------------------------
+-- --------------------------------------------------------
+-- //SELECTS.
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+-- --------------------------------------------------------
+-- //SELECT 1: UTILIZADO PARA LISTAR TODOS ENDEREÇOS, CONTATOS E INFORMAÇÕES BÁSICAS RELACIONADAS A UM USUÁRIO.
+-- --------------------------------------------------------
+SELECT Usuarios.id, Usuarios.nome, Usuarios.cpf, Usuarios.genero, Usuarios.tipo, Enderecos.cep, Enderecos.rua, 
+Enderecos.cidade, Enderecos.bairro, Enderecos.estado, Enderecos.numero, Enderecos.tipo, Contatos.email, Contatos.celular 
+FROM
+    Usuarios
+LEFT JOIN
+	Enderecos
+    ON Usuarios.id = Enderecos.usuario_id
+LEFT JOIN
+	Contatos
+	ON Usuarios.id = Contatos.usuario_id;
+-- --------------------------------------------------------
+-- //SELECT 2: UTILIZADO PARA LISTAR TODOS OS ANIMAIS EM SITUÇÃO DISPONÍVEL PARA ADOÇÃO (COM ALGUMAS INFOS).
+-- --------------------------------------------------------
+SELECT
+	Animais.id, Animais.nome, Animais.raca, Animais.sexo, Animais.especie, Animais.situacao, Prontuarios.observacoes_gerais, 
+COUNT(DISTINCT Animal_Vacina.vacina_id) AS n_vacinas, IFNULL(GROUP_CONCAT(DISTINCT Doencas.nome SEPARATOR ', '), 'Não Possui') AS Doencas, 
+IFNULL(Prontuarios.deficiencia, 'Não Possui') AS deficiencia, IFNULL(Prontuarios.alergias, 'Não Possui') AS alergias, 
+	CASE 
+    WHEN Prontuarios.castrado = 'S' THEN 'Sim' 
+    WHEN Prontuarios.castrado = 'N' THEN 'Não'
+    ELSE 'Não Informado'
+    END AS Castrado
+FROM
+    Animais
+LEFT JOIN
+	Prontuarios
+    ON Animais.id = Prontuarios.animal_id
+LEFT JOIN
+	Animal_Vacina
+	ON Animais.id = Animal_Vacina.animal_id
+LEFT JOIN
+    Doenca_Prontuario
+    ON Prontuarios.id = Doenca_Prontuario.prontuario_id
+LEFT JOIN
+    Doencas
+    ON Doenca_Prontuario.doenca_id = Doencas.id
+WHERE
+    Animais.situacao = 'D'
+GROUP BY
+	Animais.id, Animais.nome, Animais.raca, Animais.sexo, Animais.especie, Animais.situacao, Prontuarios.observacoes_gerais, 
+Prontuarios.deficiencia, Prontuarios.alergias, Prontuarios.castrado
+ORDER BY
+	Animais.id;
+-- --------------------------------------------------------
+-- //SELECT 3: UTILIZADO PARA LISTAR TODOS OS ANIMAIS FILTRADOS POR ESPÉCIE, PORTE E COR.
+-- --------------------------------------------------------
+-- //ESPÉCIE.
+-- --------------------------------------------------------
+SELECT
+	especie, COUNT(*) AS quantidade
+FROM 
+	Animais
+GROUP BY 
+	especie
+ORDER BY 
+	quantidade DESC;
+-- --------------------------------------------------------
+-- //PORTE.
+-- --------------------------------------------------------
+SELECT 
+	porte, COUNT(*) AS quantidade
+FROM 
+	Animais
+GROUP BY 
+	porte
+ORDER BY 
+    CASE porte
+        WHEN 'pequeno' THEN 1
+        WHEN 'medio' THEN 2
+        WHEN 'grande' THEN 3
+    END;
+-- --------------------------------------------------------
+-- //COR.
+-- --------------------------------------------------------
+SELECT 
+	cor, COUNT(*) AS quantidade
+FROM 
+	Animais
+GROUP BY 
+	cor
+ORDER BY 
+	quantidade DESC;
+    
+    -- Usando OVER(PARTITION BY)
+    
+SELECT 
+    distinct
+	cor, COUNT(*) over(partition by cor) AS quantidade
+FROM 
+	Animais
+ORDER BY 
+	quantidade DESC;
+    
+-- --------------------------------------------------------
+-- //SELECT 4: UTILIZADO PARA CONSULTAR HISTÓRICO DE ADOÇÕES.
+-- --------------------------------------------------------
+SELECT 
+Adocoes.id AS id_adocao, Usuarios.nome AS adotante, Animais.nome AS nome_animal, 
+Adocoes.data_adocao, Adocoes.situacao AS situacao_adocao, Adocoes.observacoes, Adocoes.motivo_reprovacao, Animais.raca AS raca_animal, 
+Animais.idade AS idade_animal, Animais.especie AS especie_animal
+FROM  
+    Adocoes
+JOIN 
+    Usuarios ON Adocoes.usuario_id = Usuarios.id
+JOIN 
+    Animais ON Adocoes.animal_id = Animais.id
+ORDER BY 
+    Adocoes.data_adocao ASC;
+    
+
+-- --------------------------------------------------------
+-- //SELECT 5: UTILIZADO PARA CONSULTAR INFORMAÇÕES REFERENTES A UMA CAMPANHA.
+-- --------------------------------------------------------
+SELECT 
+    Campanhas.id, Campanhas.nome, Usuarios.id AS id_organizador, Usuarios.nome AS nome_organizador, Campanhas.tipo, Campanhas.custo,
+    IF(Campanhas.tipo IN ('Arrecadação de Fundos', 'Doação'), Campanhas.lucro, NULL) AS total_arrecadado,
+    IF(Campanhas.tipo IN ('Arrecadação de Fundos', 'Doação'), Campanhas.lucro - Campanhas.custo, NULL) AS lucro_liquido,
+    IF(Campanhas.tipo IN ('Adoção', 'Saúde Animal', 'Voluntariado', 'Bem-Estar Animal', 'Educação'),
+       'Objetivo Não Financeiro',
+       CONCAT((Campanhas.lucro / NULLIF(Campanhas.custo, 0)) * 100, '%')) AS percentual
+FROM 
+    Campanhas
+LEFT JOIN 
+    Usuarios 
+    ON Campanhas.organizador_id = Usuarios.id
+ORDER BY 
+    Campanhas.id;
+-- --------------------------------------------------------
+-- //SELECT 6: UTILIZADO PARA CONSULTAR NÚMERO DE ADOÇÕES POR MÊS/ANO.
+-- --------------------------------------------------------
+SELECT 
+	COUNT(*) AS total_adocoes, YEAR(Adocoes.data_adocao) AS ano, MONTH(Adocoes.data_adocao) AS mes, 
+GROUP_CONCAT(DISTINCT Animais.nome SEPARATOR ', ') AS nome_animal, GROUP_CONCAT(DISTINCT Animais.especie SEPARATOR ', ') AS especie, 
+GROUP_CONCAT(DISTINCT Animais.porte SEPARATOR ', ') AS porte
+FROM 
+    Adocoes
+JOIN 
+    Animais
+    ON Adocoes.animal_id = Animais.id
+WHERE 
+    Adocoes.situacao = 'concluido'
+GROUP BY 
+    ano, mes
+ORDER BY 
+    ano DESC;
+-- --------------------------------------------------------
+-- //SELECT 7: UTILIZADO PARA CONSULTAR ANIMAIS QUE PERMANECEM MAIS TEMPO EM ADOÇÃO.
+-- --------------------------------------------------------
+SELECT 
+    id, nome, especie, raca, data_chegada,
+    DATEDIFF(NOW(), data_chegada) AS dias_esperando_adocao
+FROM 
+    Animais
+WHERE 
+    situacao = 'D'
+    AND data_chegada <= NOW()
+ORDER BY 
+    dias_esperando_adocao DESC;
+-- --------------------------------------------------------
+
+
+\
+-- --------------------------------------------------------
 -- //PROCEDURE 1: INSERIR PARÂMETRO DEFAULT NA TABELA ANIMAIS.
 -- --------------------------------------------------------
 DELIMITER $$
@@ -692,7 +864,7 @@ BEGIN
 END $$
 DELIMITER ;
 -- --------------------------------------------------------
--- //TESTES.
+-- //TESTES INSERT ANIMAL.
 -- --------------------------------------------------------
 CALL insertDefaultAnimal('Cachorro', @id);
 CALL atualizarObrigatoriosAnimal(@id, 'morango', 'viralata', 5, 5.4, 'F', 'medio', NOW(), 'vermelho');
@@ -704,27 +876,31 @@ DELETE FROM Animais WHERE id = @id;
 DELIMITER $$
 CREATE PROCEDURE atualizarFotoAnimal(IN vId INT, IN vFoto VARCHAR(1024))
 BEGIN
-	UPDATE Animal SET foto = vFoto WHERE id = vId;
+	UPDATE Animais SET foto = vFoto WHERE id = vId;
 END $$
 DELIMITER ;
+CALL atualizarFotoAnimal(2, 'foto');
+SELECT id, foto FROM Animais WHERE id = 2;
 -- --------------------------------------------------------
 -- //PROCEDURE 6: ATUALIZAR DESCRIÇÃO DE UM ANIMAL.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE atualizarDescricaoAnimal(IN vId INT, IN vDescricao VARCHAR(255))
 BEGIN
-	UPDATE Animal SET descricao = vDescricao WHERE id = vId;
+	UPDATE Animais SET descricao = vDescricao WHERE id = vId;
 END $$
 DELIMITER ;
+CALL atualizarDescricaoAnimal(2, 'Teste call');
 -- --------------------------------------------------------
 -- //PROCEDURE 7: ATUALIZAR DATA DE NASCIMENTO DE UM ANIMAL.
 -- --------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE atualizarDataNascimentoAnimal(IN vId INT, IN vData_nascimento DATETIME)
 BEGIN
-	UPDATE Animal SET data_nascimento = vData_nascimento WHERE id = vId;
+	UPDATE Animais SET data_nascimento = vData_nascimento WHERE id = vId;
 END $$
 DELIMITER ;
+CALL atualizarDataNascimentoAnimal(2, NOW());
 
 -- --------------------------------------------------------
 -- //PROCEDURE 8: ATUALIZAR HISTORIA DE UM ANIMAL.
@@ -732,9 +908,10 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE atualizarHistoriaAnimal(IN vId INT, IN vHistoria VARCHAR(512))
 BEGIN
-	UPDATE Animal SET historia = vHistoria WHERE id = vId;
+	UPDATE Animais SET historia = vHistoria WHERE id = vId;
 END $$
 DELIMITER ;
+CALL atualizarHistoriaAnimal(2, 'Teste call');
 
 -- --------------------------------------------------------
 -- //PROCEDURE 9: INSERIR USUARIO.
@@ -1491,8 +1668,22 @@ DELIMITER ;
 
 -- Exemplo: Calcular o custo da folha de pagamento para
 -- Junho de 2024, com 35% de encargos.
-
 SELECT f_CustoMensalFolhaPagamento(2024, 6, 35.0);
+
+-- --------------------------------------------------------
+-- //FUNCTION 2: RETORNAR LUCRO DE CAMPANHA LEVANTADA.
+-- --------------------------------------------------------
+
+CREATE FUNCTION f_LucroTotalCampanha(
+	p_Custo DECIMAL(15,2), 
+    p_Ganho DECIMAL(15,2)
+)
+RETURNS DECIMAL(15,2)
+DETERMINISTIC
+RETURN p_Ganho - p_Custo;
+SELECT f_LucroTotalCampanha(1000.0, 1500.0);
+
+
 -- --------------------------------------------------------
 
 -- --------------------------------------------------------
@@ -1539,10 +1730,10 @@ DELIMITER ;
 -- --------------------------------------------------------
 -- //TESTE DATA INVÁLIDA.
 -- --------------------------------------------------------
-INSERT INTO Campanhas 
-(organizador_id, nome, descricao, data_inicio, data_termino, meta, situacao, tipo, localizacao) 
-VALUES 
-(NULL, 'teste', 'teste', '2025-07-01 09:00:00', '2025-06-15 18:00:00', 'teste', 'aguardando', 'Arrecadação', 'Lua');
+-- INSERT INTO Campanhas 
+-- (organizador_id, nome, descricao, data_inicio, data_termino, meta, situacao, tipo, localizacao) 
+-- VALUES 
+-- (NULL, 'teste', 'teste', '2025-07-01 09:00:00', '2025-06-15 18:00:00', 'teste', 'aguardando', 'Arrecadação', 'Lua');
 -- --------------------------------------------------------
 
 -- --------------------------------------------------------
@@ -1550,7 +1741,7 @@ VALUES
 -- //CURSOR.
 -- --------------------------------------------------------
 -- --------------------------------------------------------
-DROP PROCEDURE listar_voluntarios_cursor;
+-- DROP PROCEDURE listar_voluntarios_cursor;
 
 DELIMITER $
 CREATE PROCEDURE listar_voluntarios_cursor()
